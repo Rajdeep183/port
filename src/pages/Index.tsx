@@ -1,6 +1,6 @@
-
 import { Canvas } from '@react-three/fiber';
 import { Suspense } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { SimpleScene3D } from '../components/3d/SimpleScene3D';
 import { LoadingScreen } from '../components/LoadingScreen';
 import { Navigation } from '../components/Navigation';
@@ -14,6 +14,12 @@ import { motion } from 'framer-motion';
 const Index = () => {
   return (
     <ThemeProvider>
+      <Helmet>
+        <title>Rajdeep Roy - Software Developer | Machine Learning Enthusiast</title>
+        <meta name="description" content="Portfolio of Rajdeep Roy - Software Developer and ML Enthusiast showcasing projects in machine learning, data science, and web development." />
+        <meta name="keywords" content="Rajdeep Roy, Software Developer, Machine Learning, ML Engineer, Data Science, Portfolio, Projects" />
+        <link rel="canonical" href="https://rajdeeproy21.com/" />
+      </Helmet>
       <div className="min-h-screen bg-gradient-to-br from-background via-purple-900/20 to-background relative overflow-hidden">
         {/* Navigation */}
         <Navigation />
@@ -55,7 +61,7 @@ const Index = () => {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.8, delay: 1 }}
               >
-                ML Enthusiast
+                ML Enthusiast & Software Developer
               </motion.p>
               <motion.div
                 className="flex gap-4 justify-center"

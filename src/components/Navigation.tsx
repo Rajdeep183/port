@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Menu, X, Home, User, Briefcase, Mail, Sun, Moon } from 'lucide-react';
@@ -32,8 +31,10 @@ export const Navigation = () => {
           transition={{ duration: 0.5 }}
           className="text-2xl font-bold text-foreground cursor-pointer"
           onClick={() => handleNavClick('#home')}
+          aria-label="Rajdeep Roy's Portfolio"
         >
-          RR
+          <span className="sr-only">Rajdeep Roy</span>
+          <span aria-hidden="true">RR</span>
         </motion.div>
 
         {/* Desktop Navigation */}

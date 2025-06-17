@@ -1,46 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <!-- Google Analytics Tag -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-XXXXXXXXXX');
+    </script>
+    
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Rajdeep Roy - Portfolio | Software Developer</title>
-    <meta name="description" content="Portfolio of Rajdeep Roy - Software Developer, showcasing projects, skills, and experience in web development, React, Three.js, and more." />
-    <meta name="keywords" content="Rajdeep Roy, Software Developer, Web Developer, React Developer, Portfolio, Projects, 3D, Three.js" />
+    
+    <!-- Primary Meta Tags -->
+    <title>Rajdeep Roy - Software Developer | ML Engineer | Data Science Portfolio</title>
+    <meta name="title" content="Rajdeep Roy - Software Developer | ML Engineer | Data Science Portfolio">
+    <meta name="description" content="Official portfolio of Rajdeep Roy, Software Developer and ML Enthusiast from VIT Vellore. Expert in React, Three.js, Data Science, Machine Learning, and Full-Stack Development. View projects, skills, and contact information." />
+    <meta name="keywords" content="Rajdeep Roy, Rajdeep, Roy, Software Developer, Web Developer, React Developer, ML Engineer, Machine Learning, Data Science, Portfolio, Projects, 3D, Three.js, VIT Vellore, Full-Stack, Data Engineering, rajdeeproy21.com" />
     <meta name="author" content="Rajdeep Roy" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="google-site-verification" content="5UwmzchEdjDCn8u-Spnn8uFHwrrsj7g6ZBdZKbsRXS8" />
     
     <!-- Canonical URL -->
     <link rel="canonical" href="https://rajdeeproy21.com" />
     
+    <!-- Language Alternatives -->
+    <link rel="alternate" href="https://rajdeeproy21.com" hreflang="en" />
+    
     <!-- Open Graph / Facebook -->
-    <meta property="og:title" content="Rajdeep Roy's Portfolio | 3D Bot Experience" />
-    <meta property="og:description" content="Explore Rajdeep Roy's interactive 3D portfolio built with React, Three.js, and more. A showcase of skills, projects, and creativity." />
+    <meta property="og:locale" content="en_US" />
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Rajdeep Roy - Portfolio" />
+    <meta property="og:title" content="Rajdeep Roy's Portfolio | ML Engineer & Software Developer" />
+    <meta property="og:description" content="Explore Rajdeep Roy's interactive portfolio - a showcase of Machine Learning projects, Data Science expertise, and Software Development skills. VIT Vellore graduate with experience in React, Three.js, and more." />
     <meta property="og:image" content="https://rajdeeproy21.com/thumbnail.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta property="og:url" content="https://rajdeeproy21.com" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Rajdeep Roy's Portfolio | 3D Bot Experience" />
-    <meta name="twitter:description" content="Explore Rajdeep Roy's interactive 3D portfolio built with React, Three.js, and more." />
+    <meta name="twitter:site" content="@YourTwitterHandle" />
+    <meta name="twitter:creator" content="@YourTwitterHandle" />
+    <meta name="twitter:title" content="Rajdeep Roy's Portfolio | ML Engineer & Software Developer" />
+    <meta name="twitter:description" content="Explore Rajdeep Roy's interactive portfolio - Machine Learning projects, Data Science expertise, and Full-Stack Development skills. VIT Vellore graduate with professional experience." />
     <meta name="twitter:image" content="https://rajdeeproy21.com/thumbnail.png" />
 
-    <!-- JSON-LD for structured data -->
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <meta name="theme-color" content="#ffffff">
+    
+    <!-- Schema.org markup for Google -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "Person",
         "name": "Rajdeep Roy",
         "url": "https://rajdeeproy21.com",
+        "image": "https://rajdeeproy21.com/profile.jpg",
         "sameAs": [
           "https://github.com/Rajdeep183",
-          "https://linkedin.com/in/rajdeep-roy-4086a2274"
+          "https://linkedin.com/in/rajdeep-roy-4086a2274",
+          "https://rajdeeproy21.com"
         ],
-        "jobTitle": "Software Developer",
+        "jobTitle": "Software Developer & ML Engineer",
         "worksFor": {
           "@type": "Organization",
-          "name": "Portfolio"
+          "name": "SOL Analytics",
+          "url": "https://solanalytics.com"
         },
-        "description": "Software Developer with expertise in React, Three.js, and web development"
+        "alumniOf": {
+          "@type": "EducationalOrganization",
+          "name": "VIT Vellore",
+          "url": "https://vit.ac.in"
+        },
+        "description": "Computer Science graduate from VIT Vellore with expertise in Software Development, Data Science, and Machine Learning",
+        "knowsAbout": ["Software Development", "Machine Learning", "Data Science", "React", "Three.js", "Web Development", "Cloud Computing", "AWS"],
+        "knowsLanguage": ["English", "Hindi"],
+        "address": {
+          "@type": "PostalAddress",
+          "addressCountry": "India"
+        }
       }
     </script>
     <script type="application/ld+json">
@@ -49,16 +93,65 @@
         "@type": "WebSite",
         "name": "Rajdeep Roy - Portfolio",
         "url": "https://rajdeeproy21.com",
-        "description": "Portfolio of Rajdeep Roy, a Software Developer showcasing projects and skills",
+        "description": "Official portfolio of Rajdeep Roy, a Software Developer and ML Engineer showcasing projects and skills",
         "author": {
           "@type": "Person",
           "name": "Rajdeep Roy"
+        },
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://rajdeeproy21.com/search?q={search_term_string}",
+          "query-input": "required name=search_term_string"
         }
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://rajdeeproy21.com"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "About",
+            "item": "https://rajdeeproy21.com/#about"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "Projects",
+            "item": "https://rajdeeproy21.com/#projects"
+          },
+          {
+            "@type": "ListItem",
+            "position": 4,
+            "name": "Contact",
+            "item": "https://rajdeeproy21.com/#contact"
+          }
+        ]
       }
     </script>
   </head>
   <body>
     <div id="root"></div>
+    <noscript>
+      <div style="text-align: center; padding: 20px;">
+        <h1>Rajdeep Roy - Software Developer & ML Engineer</h1>
+        <p>Welcome to the portfolio of Rajdeep Roy, a Computer Science graduate from VIT Vellore specializing in Software Development, Machine Learning, and Data Science.</p>
+        <p>Please enable JavaScript to view the interactive portfolio experience.</p>
+        <p>Contact: <a href="mailto:royrajdeep20@gmail.com">royrajdeep20@gmail.com</a></p>
+        <p>Links: 
+          <a href="https://github.com/Rajdeep183">GitHub</a> | 
+          <a href="https://linkedin.com/in/rajdeep-roy-4086a2274">LinkedIn</a>
+        </p>
+      </div>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
     <footer class="text-center mt-6 text-sm text-gray-500">
       Made with ❤️ by Rajdeep Roy

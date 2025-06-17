@@ -35,7 +35,7 @@ export const AboutSection = () => {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <h2 className="text-5xl font-bold text-foreground mb-6">About Me</h2>
+          <h2 className="text-5xl font-bold text-foreground mb-6">About Rajdeep Roy</h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             I'm Rajdeep Roy, a passionate Computer Science undergrad at VIT Vellore and a full-stack developer with a strong foundation in data science and cloud computing. 
             I enjoy building intelligent systems and intuitive web applications that solve real-world problems.
@@ -44,7 +44,7 @@ export const AboutSection = () => {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
           {skills.map((skill, index) => (
-            <motion.div
+            <motion.article
               key={skill.name}
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -52,30 +52,35 @@ export const AboutSection = () => {
               viewport={{ once: true }}
               className="bg-card/50 backdrop-blur-sm rounded-lg p-6 border border-border hover:bg-card/70 transition-all"
             >
-              <skill.icon className="w-12 h-12 text-cyan-400 mb-4" />
+              <skill.icon className="w-12 h-12 text-cyan-400 mb-4" aria-hidden="true" />
               <h3 className="text-xl font-semibold text-foreground mb-2">{skill.name}</h3>
               <p className="text-muted-foreground">{skill.description}</p>
-            </motion.div>
+            </motion.article>
           ))}
         </div>
 
-        <motion.div
+        <motion.article
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
           className="bg-card/50 backdrop-blur-sm rounded-lg p-8 border border-border"
         >
-          <h3 className="text-2xl font-semibold text-foreground mb-4">My Journey</h3>
-          <p className="text-muted-foreground leading-relaxed">
-            My journey began with curiosity for how systems work and grew into a drive for creating impactful solutions. 
-            At SOL Analytics, I built scalable data pipelines and optimized reporting for over a million records. 
-            As Project & Events Head at IETE ISF, I led multiple tech events, collaborated with professionals, and empowered students.
-            I'm always looking to learn and grow — currently diving deeper into data science, system security, and embedded systems.
-            <br /><br />
-            Check out my <a href="https://github.com/Rajdeep183" className="text-cyan-400 underline" target="_blank">GitHub</a> and <a href="https://linkedin.com/in/rajdeep-roy-4086a2274" className="text-cyan-400 underline" target="_blank">LinkedIn</a> to see more of what I’ve been working on.
-          </p>
-        </motion.div>
+          <h3 className="text-2xl font-semibold text-foreground mb-4">Rajdeep Roy's Professional Journey</h3>
+          <div className="text-muted-foreground leading-relaxed">
+            <p>
+              My journey began with curiosity for how systems work and grew into a drive for creating impactful solutions. 
+              At SOL Analytics, I built scalable data pipelines and optimized reporting for over a million records. 
+            </p>
+            <p className="my-4">
+              As Project & Events Head at IETE ISF, I led multiple tech events, collaborated with professionals, and empowered students.
+              I'm always looking to learn and grow — currently diving deeper into data science, system security, and embedded systems.
+            </p>
+            <p>
+              Check out my <a href="https://github.com/Rajdeep183" className="text-cyan-400 underline" target="_blank" rel="noopener" aria-label="Rajdeep Roy's GitHub profile">GitHub</a> and <a href="https://linkedin.com/in/rajdeep-roy-4086a2274" className="text-cyan-400 underline" target="_blank" rel="noopener" aria-label="Rajdeep Roy's LinkedIn profile">LinkedIn</a> to see more of what I've been working on.
+            </p>
+          </div>
+        </motion.article>
       </div>
     </section>
   );

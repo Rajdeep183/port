@@ -38,6 +38,9 @@ export const LoadingScreen = () => {
     speed: 0.7 + Math.random() * 0.3,
   }));
 
+  // Use a dark purple shade for backgrounds and accents
+  const darkPurple = "#2a003f";
+
   return (
     <AnimatePresence>
       {isLoading && (
@@ -45,23 +48,33 @@ export const LoadingScreen = () => {
           initial={{ opacity: 1 }}
           exit={{ opacity: 0, scale: 0.98 }}
           transition={{ duration: 0.8, ease: "easeInOut" }}
-          className="fixed inset-0 z-50 bg-gradient-to-br from-slate-900 via-purple-900 to-indigo-900 flex items-center justify-center overflow-hidden"
+          className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden"
+          style={{
+            background: `linear-gradient(135deg, ${darkPurple}, #3b0764, #1e1832 90%)`
+          }}
         >
           {/* Elegant Background Pattern */}
           <div className="absolute inset-0">
             {/* Radial gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-radial from-purple-800/10 via-transparent to-slate-900/30" />
-            
+            <div
+              className="absolute inset-0"
+              style={{
+                background: `radial-gradient(circle at 60% 40%, #7c3aed22 0%, transparent 60%), radial-gradient(circle at 20% 80%, #a21caf33 0%, transparent 70%)`
+              }}
+            />
+
             {/* Floating background particles */}
             {backgroundParticles.map((particle) => (
               <motion.div
                 key={particle.id}
-                className="absolute rounded-full bg-gradient-to-r from-purple-400/20 to-violet-400/20"
-                style={{ 
-                  left: `${particle.x}%`, 
+                className="absolute rounded-full"
+                style={{
+                  left: `${particle.x}%`,
                   top: `${particle.y}%`,
                   width: `${particle.size}px`,
-                  height: `${particle.size}px`
+                  height: `${particle.size}px`,
+                  background: `linear-gradient(90deg, #7c3aed33, #a21caf33)`,
+                  boxShadow: `0 0 8px 2px #2e106580`
                 }}
                 animate={{
                   y: [0, -30, 0],
@@ -82,7 +95,7 @@ export const LoadingScreen = () => {
               <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                   <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
-                    <circle cx="30" cy="30" r="1" fill="#8B5CF6" opacity="0.3"/>
+                    <circle cx="30" cy="30" r="1" fill="#7c3aed" opacity="0.25" />
                   </pattern>
                 </defs>
                 <rect width="100%" height="100%" fill="url(#grid)" />
@@ -94,12 +107,14 @@ export const LoadingScreen = () => {
           {particles.map((particle) => (
             <motion.div
               key={particle.id}
-              className="absolute w-2 h-2 bg-gradient-to-r from-purple-400 to-violet-400 rounded-full opacity-60"
+              className="absolute w-2 h-2 rounded-full opacity-60"
               style={{
                 left: "50%",
                 top: "50%",
                 marginLeft: "-4px",
                 marginTop: "-4px",
+                background: `linear-gradient(90deg, #c026d3 40%, #7c3aed 100%)`,
+                boxShadow: `0 0 8px 2px #9d174d50`
               }}
               animate={{
                 x: Math.cos((particle.angle * Math.PI) / 180) * particle.radius,
@@ -119,8 +134,8 @@ export const LoadingScreen = () => {
             <motion.div
               initial={{ scale: 0.8, opacity: 0, rotateY: -90 }}
               animate={{ scale: 1, opacity: 1, rotateY: 0 }}
-              transition={{ 
-                duration: 1.2, 
+              transition={{
+                duration: 1.2,
                 ease: "easeOut",
                 type: "spring",
                 stiffness: 100
@@ -129,28 +144,31 @@ export const LoadingScreen = () => {
             >
               {/* Outer elegant ring */}
               <motion.div
-                className="absolute w-72 h-72 rounded-full border border-purple-500/20"
-                animate={{ 
+                className="absolute w-72 h-72 rounded-full"
+                style={{ border: `2px solid #7c3aed44` }}
+                animate={{
                   scale: [1, 1.05, 1],
                   opacity: [0.2, 0.5, 0.2],
                 }}
-                transition={{ 
-                  duration: 3, 
-                  repeat: Infinity, 
-                  ease: "easeInOut" 
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: "easeInOut"
                 }}
               />
 
               {/* Middle rotating ring */}
               <motion.div
-                className="absolute w-60 h-60 rounded-full border border-white/10"
+                className="absolute w-60 h-60 rounded-full"
+                style={{ border: "2px solid #a21caf22" }}
                 animate={{ rotate: 360 }}
                 transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
               />
 
               {/* Inner counter-rotating ring */}
               <motion.div
-                className="absolute w-52 h-52 rounded-full border border-purple-400/30"
+                className="absolute w-52 h-52 rounded-full"
+                style={{ border: "2px solid #a21caf55" }}
                 animate={{ rotate: -360 }}
                 transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
               />
@@ -169,18 +187,18 @@ export const LoadingScreen = () => {
                     cx="96"
                     cy="96"
                     r="88"
-                    stroke="#374151"
+                    stroke="#2a003f"
                     strokeWidth="6"
                     fill="none"
-                    opacity="0.3"
+                    opacity="0.4"
                   />
-                  
+
                   {/* Progress Circle */}
                   <motion.circle
                     cx="96"
                     cy="96"
                     r="88"
-                    stroke="url(#progressGradient)"
+                    stroke="url(#progressGradientDark)"
                     strokeWidth="6"
                     fill="none"
                     strokeDasharray="553"
@@ -189,15 +207,15 @@ export const LoadingScreen = () => {
                     animate={{ strokeDashoffset: 553 - (progress / 100) * 553 }}
                     transition={{ duration: 0.3, ease: "easeOut" }}
                     style={{
-                      filter: "drop-shadow(0 0 12px rgba(147, 51, 234, 0.6))",
+                      filter: "drop-shadow(0 0 12px #7c3aed88)",
                     }}
                   />
-                  
+
                   <defs>
-                    <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#8B5CF6" />
-                      <stop offset="50%" stopColor="#A855F7" />
-                      <stop offset="100%" stopColor="#C084FC" />
+                    <linearGradient id="progressGradientDark" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#2a003f" />
+                      <stop offset="40%" stopColor="#7c3aed" />
+                      <stop offset="100%" stopColor="#a21caf" />
                     </linearGradient>
                   </defs>
                 </svg>
@@ -208,8 +226,8 @@ export const LoadingScreen = () => {
                   <motion.div
                     initial={{ scale: 0, rotate: -180 }}
                     animate={{ scale: 1, rotate: 0 }}
-                    transition={{ 
-                      duration: 1, 
+                    transition={{
+                      duration: 1,
                       ease: "easeOut",
                       type: "spring",
                       stiffness: 150,
@@ -221,14 +239,14 @@ export const LoadingScreen = () => {
                       className="text-7xl font-light text-white leading-none tracking-wider"
                       style={{
                         fontFamily: "'Inter', sans-serif",
-                        filter: "drop-shadow(0 0 20px rgba(147, 51, 234, 0.4))",
-                        textShadow: "0 0 15px rgba(147, 51, 234, 0.3)",
+                        filter: "drop-shadow(0 0 20px #7c3aed55)",
+                        textShadow: "0 0 15px #2a003f88",
                       }}
                       animate={{
                         textShadow: [
-                          "0 0 15px rgba(147, 51, 234, 0.3)",
-                          "0 0 25px rgba(147, 51, 234, 0.5)",
-                          "0 0 15px rgba(147, 51, 234, 0.3)"
+                          "0 0 15px #2a003f88",
+                          "0 0 25px #7c3aed",
+                          "0 0 15px #2a003f88"
                         ],
                       }}
                       transition={{
@@ -249,14 +267,15 @@ export const LoadingScreen = () => {
                     className="mt-3 flex items-center justify-center"
                   >
                     <motion.p
-                      className="text-sm font-medium text-purple-300 tracking-wider"
-                      animate={{ 
+                      className="text-sm font-medium tracking-wider"
+                      style={{ color: "#a78bfa" }}
+                      animate={{
                         scale: [1, 1.05, 1],
-                        opacity: [0.7, 1, 0.7] 
+                        opacity: [0.7, 1, 0.7]
                       }}
-                      transition={{ 
-                        duration: 1.8, 
-                        repeat: Infinity 
+                      transition={{
+                        duration: 1.8,
+                        repeat: Infinity
                       }}
                     >
                       {progress}%
@@ -274,19 +293,23 @@ export const LoadingScreen = () => {
               className="mt-20 text-center"
             >
               <motion.p
-                className="text-lg font-light text-white tracking-[0.3em] uppercase"
+                className="text-lg font-light tracking-[0.3em] uppercase"
+                style={{ color: "#e0e7ff" }}
                 animate={{ opacity: [0.6, 1, 0.6] }}
                 transition={{ duration: 2.5, repeat: Infinity }}
               >
                 Loading Portfolio
               </motion.p>
-              
+
               {/* Elegant dots animation */}
               <div className="flex justify-center mt-8 space-x-3">
                 {[0, 1, 2, 3, 4].map((i) => (
                   <motion.div
                     key={i}
-                    className="w-2 h-2 bg-gradient-to-r from-purple-400 to-violet-400 rounded-full"
+                    className="w-2 h-2 rounded-full"
+                    style={{
+                      background: `linear-gradient(90deg, #a21caf, #7c3aed 90%)`
+                    }}
                     animate={{
                       scale: [0.8, 1.3, 0.8],
                       opacity: [0.3, 1, 0.3],
@@ -319,9 +342,13 @@ export const LoadingScreen = () => {
                 repeat: Infinity,
               }}
             >
-              <div 
-                className="w-full h-full border-l-2 border-t-2 border-purple-500/30 rounded-tl-lg"
-                style={{ transform: `rotate(${corner * 90}deg)` }}
+              <div
+                className="w-full h-full rounded-tl-lg"
+                style={{
+                  borderLeft: "2px solid #7c3aed55",
+                  borderTop: "2px solid #a21caf44",
+                  transform: `rotate(${corner * 90}deg)`
+                }}
               />
             </motion.div>
           ))}

@@ -284,13 +284,13 @@ const Index = () => {
                       GitHub
                     </a>
                     <a 
-  href="https://docs.google.com/document/d/1XUs4nQxRFyKGnd96vhWwu5U9xHkN3WhGlM8BjMkGsMQ/edit?usp=sharing" 
-  target="_blank" 
-  rel="noopener noreferrer"
-  className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold transition-colors"
->
-  Resume
-</a>
+                      href="https://docs.google.com/document/d/1XUs4nQxRFyKGnd96vhWwu5U9xHkN3WhGlM8BjMkGsMQ/edit?usp=sharing" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold transition-colors"
+                    >
+                      Resume
+                    </a>
                   </motion.div>
                 </motion.div>
               </div>
@@ -325,19 +325,28 @@ const Index = () => {
             >
               <ContactSection />
             </motion.div>
-            
-            {/* Chatbot */}
-            <motion.div
-              initial={{ opacity: 0, scale: isMobile ? 0.95 : 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: isMobile ? 0.4 : 0.6, delay: isMobile ? 1.0 : 2.0 }}
-              style={{ willChange: 'transform' }}
-            >
-              <ChatBot />
-            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* ChatBot - Outside AnimatePresence for immediate visibility */}
+      {isMainContentVisible && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8, y: 100 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ 
+            duration: 0.6, 
+            delay: isMobile ? 0.5 : 1.0,
+            type: "spring",
+            stiffness: 200,
+            damping: 25
+          }}
+          className="fixed bottom-0 right-0 z-[9999]"
+          style={{ willChange: 'transform' }}
+        >
+          <ChatBot />
+        </motion.div>
+      )}
     </ThemeProvider>
   );
 };

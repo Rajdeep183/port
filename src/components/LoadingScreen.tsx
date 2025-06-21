@@ -24,97 +24,50 @@ export const LoadingScreen = ({ onLoadingComplete }: LoadingScreenProps) => {
           setTimeout(() => {
             setIsLoading(false);
             onLoadingComplete?.();
-          }, isMobile ? 800 : 1200); // Faster transition on mobile
+          }, isMobile ? 800 : 1200);
           return 100;
         }
-        return prev + (isMobile ? 2 : 1); // Faster progress on mobile
+        return prev + (isMobile ? 2 : 1);
       });
-    }, isMobile ? 20 : 30); // Faster updates on mobile
+    }, isMobile ? 20 : 30);
 
     return () => clearInterval(timer);
   }, [onLoadingComplete, isMobile]);
 
-  // Reduce particle count on mobile for better performance
-  const backgroundParticles = useMemo(() => 
-    Array.from({ length: isMobile ? 8 : 20 }, (_, i) => ({
-      id: i,
-      x: Math.random() * 100,
-      y: Math.random() * 100,
-      delay: Math.random() * (isMobile ? 3 : 5),
-      duration: (isMobile ? 8 : 10) + Math.random() * (isMobile ? 4 : 8),
-      size: 1 + Math.random() * (isMobile ? 1 : 2),
-    })), [isMobile]
-  );
+  // Generate elegant floating particles
+  const backgroundParticles = Array.from({ length: 20 }, (_, i) => ({
+    id: i,
+    x: Math.random() * 100,
+    y: Math.random() * 100,
+    delay: Math.random() * 5,
+    duration: 10 + Math.random() * 8,
+    size: 1 + Math.random() * 2,
+  }));
 
-  // Reduce orbital particles on mobile
-  const particles = useMemo(() => 
-    Array.from({ length: isMobile ? 4 : 8 }, (_, i) => ({
-      id: i,
-      angle: (i * 360) / (isMobile ? 4 : 8),
-      radius: (isMobile ? 120 : 140) + Math.random() * 20,
-      speed: 0.7 + Math.random() * 0.3,
-    })), [isMobile]
-  );
+  // Generate orbital particles
+  const particles = Array.from({ length: 8 }, (_, i) => ({
+    id: i,
+    angle: (i * 360) / 8,
+    radius: 140 + Math.random() * 20,
+    speed: 0.7 + Math.random() * 0.3,
+  }));
 
-  // Premium color palette
-  const colors = {
-    background: "linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 40%, #2a2a2a 100%)",
-    accent: "#f8fafc",
-    secondary: "#64748b",
-    highlight: "#e2e8f0",
-    subtle: "#334155"
-  };
-
+  // Use a dark purple shade for backgrounds and accents
   const darkPurple = "#2a003f";
-
-  // Mobile-optimized animation variants
-  const mobileVariants = {
-    container: {
-      initial: { opacity: 1 },
-      exit: { 
-        opacity: 0, 
-        scale: isMobile ? 1 : 0.98,
-        transition: { duration: isMobile ? 0.5 : 0.8, ease: "easeInOut" }
-      }
-    },
-    mainContent: {
-      initial: { scale: 0.9, opacity: 0 },
-      animate: { 
-        scale: 1, 
-        opacity: 1,
-        transition: {
-          duration: isMobile ? 0.8 : 1.2,
-          ease: "easeOut"
-        }
-      }
-    },
-    text: {
-      initial: { opacity: 0, y: 10 },
-      animate: { 
-        opacity: 1, 
-        y: 0,
-        transition: { duration: isMobile ? 0.4 : 0.6, delay: isMobile ? 0.4 : 0.8 }
-      }
-    }
-  };
 
   return (
     <AnimatePresence>
       {isLoading && (
         <motion.div
-          variants={mobileVariants.container}
-          initial="initial"
-          exit="exit"
+          initial={{ opacity: 1 }}
+          exit={{ opacity: 0, scale: 0.98 }}
+          transition={{ duration: 0.8, ease: "easeInOut" }}
           className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden"
           style={{
-            background: `linear-gradient(135deg, ${darkPurple}, #3b0764, #1e1832 90%)`,
-            // Use transform3d for hardware acceleration
-            transform: 'translate3d(0,0,0)',
-            backfaceVisibility: 'hidden',
-            perspective: '1000px'
+            background: `linear-gradient(135deg, ${darkPurple}, #3b0764, #1e1832 90%)`
           }}
         >
-          {/* Simplified Background Pattern for mobile */}
+          {/* Elegant Background Pattern */}
           <div className="absolute inset-0">
             {/* Radial gradient overlay */}
             <div
@@ -124,159 +77,152 @@ export const LoadingScreen = ({ onLoadingComplete }: LoadingScreenProps) => {
               }}
             />
 
-            {/* Conditionally render complex animations only on desktop or when motion is not reduced */}
-            {!prefersReducedMotion && !isMobile && (
-              <>
-                {/* Floating background particles - desktop only */}
-                {backgroundParticles.map((particle) => (
-                  <motion.div
-                    key={particle.id}
-                    className="absolute rounded-full"
-                    style={{
-                      left: `${particle.x}%`,
-                      top: `${particle.y}%`,
-                      width: `${particle.size}px`,
-                      height: `${particle.size}px`,
-                      background: `linear-gradient(90deg, #7c3aed33, #a21caf33)`,
-                      willChange: 'transform'
-                    }}
-                    animate={{
-                      y: [0, -30, 0],
-                      opacity: [0.1, 0.4, 0.1],
-                      scale: [0.8, 1.2, 0.8],
-                    }}
-                    transition={{
-                      duration: particle.duration,
-                      delay: particle.delay,
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                    }}
-                  />
-                ))}
-              </>
-            )}
+            {/* Floating background particles */}
+            {backgroundParticles.map((particle) => (
+              <motion.div
+                key={particle.id}
+                className="absolute rounded-full"
+                style={{
+                  left: `${particle.x}%`,
+                  top: `${particle.y}%`,
+                  width: `${particle.size}px`,
+                  height: `${particle.size}px`,
+                  background: `linear-gradient(90deg, #7c3aed33, #a21caf33)`,
+                  boxShadow: `0 0 8px 2px #2e106580`
+                }}
+                animate={{
+                  y: [0, -30, 0],
+                  opacity: [0.1, 0.4, 0.1],
+                  scale: [0.8, 1.2, 0.8],
+                }}
+                transition={{
+                  duration: particle.duration,
+                  delay: particle.delay,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+              />
+            ))}
 
-            {/* Simplified mobile particles */}
-            {isMobile && (
-              <div className="absolute inset-0 opacity-10">
-                <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-                  <defs>
-                    <pattern id="mobile-grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                      <circle cx="20" cy="20" r="1" fill="#7c3aed" opacity="0.3" />
-                    </pattern>
-                  </defs>
-                  <rect width="100%" height="100%" fill="url(#mobile-grid)" />
-                </svg>
-              </div>
-            )}
+            {/* Subtle geometric pattern */}
+            <div className="absolute inset-0 opacity-5">
+              <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
+                    <circle cx="30" cy="30" r="1" fill="#7c3aed" opacity="0.25" />
+                  </pattern>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#grid)" />
+              </svg>
+            </div>
           </div>
 
-          {/* Simplified orbital particles for mobile */}
-          {!prefersReducedMotion && (
-            <>
-              {particles.map((particle) => (
-                <motion.div
-                  key={particle.id}
-                  className="absolute rounded-full opacity-60"
-                  style={{
-                    left: "50%",
-                    top: "50%",
-                    width: isMobile ? "6px" : "8px",
-                    height: isMobile ? "6px" : "8px",
-                    marginLeft: isMobile ? "-3px" : "-4px",
-                    marginTop: isMobile ? "-3px" : "-4px",
-                    background: `linear-gradient(90deg, #c026d3 40%, #7c3aed 100%)`,
-                    willChange: 'transform'
-                  }}
-                  animate={{
-                    x: Math.cos((particle.angle * Math.PI) / 180) * particle.radius,
-                    y: Math.sin((particle.angle * Math.PI) / 180) * particle.radius,
-                    rotate: 360,
-                  }}
-                  transition={{
-                    x: { duration: (isMobile ? 8 : 12) / particle.speed, repeat: Infinity, ease: "linear" },
-                    y: { duration: (isMobile ? 8 : 12) / particle.speed, repeat: Infinity, ease: "linear" },
-                    rotate: { duration: isMobile ? 2 : 3, repeat: Infinity, ease: "linear" },
-                  }}
-                />
-              ))}
-            </>
-          )}
+          {/* Elegant orbital particles */}
+          {particles.map((particle) => (
+            <motion.div
+              key={particle.id}
+              className="absolute w-2 h-2 rounded-full opacity-60"
+              style={{
+                left: "50%",
+                top: "50%",
+                marginLeft: "-4px",
+                marginTop: "-4px",
+                background: `linear-gradient(90deg, #c026d3 40%, #7c3aed 100%)`,
+                boxShadow: `0 0 8px 2px #9d174d50`
+              }}
+              animate={{
+                x: Math.cos((particle.angle * Math.PI) / 180) * particle.radius,
+                y: Math.sin((particle.angle * Math.PI) / 180) * particle.radius,
+                rotate: 360,
+              }}
+              transition={{
+                x: { duration: 12 / particle.speed, repeat: Infinity, ease: "linear" },
+                y: { duration: 12 / particle.speed, repeat: Infinity, ease: "linear" },
+                rotate: { duration: 3, repeat: Infinity, ease: "linear" },
+              }}
+            />
+          ))}
 
-          {/* Main Loading Container - Optimized for mobile */}
+          {/* Main Loading Container */}
           <div className="relative flex flex-col items-center justify-center">
             <motion.div
-              variants={mobileVariants.mainContent}
-              initial="initial"
-              animate="animate"
+              initial={{ scale: 0.8, opacity: 0, rotateY: -90 }}
+              animate={{ scale: 1, opacity: 1, rotateY: 0 }}
+              transition={{
+                duration: 1.2,
+                ease: "easeOut",
+                type: "spring",
+                stiffness: 100
+              }}
               className="relative flex items-center justify-center"
-              style={{ willChange: 'transform' }}
             >
-              {/* Simplified rings for mobile */}
-              {!isMobile && (
-                <>
-                  {/* Outer elegant ring - desktop only */}
-                  <motion.div
-                    className="absolute w-72 h-72 rounded-full"
-                    style={{ border: `2px solid #7c3aed44` }}
-                    animate={{
-                      scale: [1, 1.05, 1],
-                      opacity: [0.2, 0.5, 0.2],
-                    }}
-                    transition={{
-                      duration: 3,
-                      repeat: Infinity,
-                      ease: "easeInOut"
-                    }}
-                  />
+              {/* Outer elegant ring */}
+              <motion.div
+                className="absolute w-72 h-72 rounded-full"
+                style={{ border: `2px solid #7c3aed44` }}
+                animate={{
+                  scale: [1, 1.05, 1],
+                  opacity: [0.2, 0.5, 0.2],
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              />
 
-                  {/* Rotating rings - desktop only */}
-                  <motion.div
-                    className="absolute w-60 h-60 rounded-full"
-                    style={{ border: "2px solid #a21caf22" }}
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                  />
-                </>
-              )}
+              {/* Middle rotating ring */}
+              <motion.div
+                className="absolute w-60 h-60 rounded-full"
+                style={{ border: "2px solid #a21caf22" }}
+                animate={{ rotate: 360 }}
+                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+              />
 
-              {/* Main Progress Circle - Mobile optimized */}
-              <div className={`relative flex items-center justify-center ${isMobile ? 'w-32 h-32' : 'w-48 h-48'}`}>
+              {/* Inner counter-rotating ring */}
+              <motion.div
+                className="absolute w-52 h-52 rounded-full"
+                style={{ border: "2px solid #a21caf55" }}
+                animate={{ rotate: -360 }}
+                transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+              />
+
+              {/* Main Progress Circle */}
+              <div className="relative w-48 h-48 flex items-center justify-center">
                 <svg
                   className="absolute -rotate-90"
-                  width={isMobile ? "128" : "192"}
-                  height={isMobile ? "128" : "192"}
-                  viewBox={`0 0 ${isMobile ? "128" : "192"} ${isMobile ? "128" : "192"}`}
+                  width="192"
+                  height="192"
+                  viewBox="0 0 192 192"
                   xmlns="http://www.w3.org/2000/svg"
-                  style={{ willChange: 'transform' }}
                 >
                   {/* Background Circle */}
                   <circle
-                    cx={isMobile ? "64" : "96"}
-                    cy={isMobile ? "64" : "96"}
-                    r={isMobile ? "56" : "88"}
+                    cx="96"
+                    cy="96"
+                    r="88"
                     stroke="#2a003f"
-                    strokeWidth={isMobile ? "4" : "6"}
+                    strokeWidth="6"
                     fill="none"
                     opacity="0.4"
                   />
 
                   {/* Progress Circle */}
                   <motion.circle
-                    cx={isMobile ? "64" : "96"}
-                    cy={isMobile ? "64" : "96"}
-                    r={isMobile ? "56" : "88"}
+                    cx="96"
+                    cy="96"
+                    r="88"
                     stroke="url(#progressGradientDark)"
-                    strokeWidth={isMobile ? "4" : "6"}
+                    strokeWidth="6"
                     fill="none"
-                    strokeDasharray={isMobile ? "352" : "553"}
-                    strokeDashoffset={isMobile ? "352" : "553"}
+                    strokeDasharray="553"
+                    strokeDashoffset="553"
                     strokeLinecap="round"
-                    animate={{ 
-                      strokeDashoffset: (isMobile ? 352 : 553) - (progress / 100) * (isMobile ? 352 : 553) 
+                    animate={{ strokeDashoffset: 553 - (progress / 100) * 553 }}
+                    transition={{ duration: 0.3, ease: "easeOut" }}
+                    style={{
+                      filter: "drop-shadow(0 0 12px #7c3aed88)",
                     }}
-                    transition={{ duration: 0.2, ease: "easeOut" }}
-                    style={{ willChange: 'stroke-dashoffset' }}
                   />
 
                   <defs>
@@ -288,70 +234,142 @@ export const LoadingScreen = ({ onLoadingComplete }: LoadingScreenProps) => {
                   </defs>
                 </svg>
 
-                {/* Center Content - Mobile optimized */}
+                {/* Center Content */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  {/* Refined Initials */}
+                  {/* Simplified RR Animation that actually renders */}
                   <motion.div
                     initial={{ scale: 0, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{
-                      duration: isMobile ? 1.0 : 1.8,
+                      duration: 0.8,
                       ease: [0.16, 1, 0.3, 1],
-                      delay: isMobile ? 0.2 : 0.5
+                      delay: 0.2
                     }}
-                    className="flex items-center justify-center mb-2"
+                    className="relative flex items-center justify-center mb-4"
                   >
-                    <h1
-                      className={`font-light tracking-[0.2em] leading-none ${isMobile ? 'text-4xl' : 'text-6xl'}`}
+                    {/* Main RR Text - Appears in place with dramatic effect */}
+                    <motion.h1
+                      className={`font-light leading-none tracking-[0.1em] ${isMobile ? 'text-5xl' : 'text-7xl'}`}
                       style={{
                         fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
-                        color: colors.accent,
-                        fontWeight: 300,
-                        letterSpacing: "0.15em"
+                        fontWeight: 200,
+                        color: "#ffffff",
+                        textShadow: "0 0 30px rgba(124, 58, 237, 0.5)"
                       }}
                     >
-                      RR
-                    </h1>
+                      {/* First R with dramatic scale from behind */}
+                      <motion.span
+                        initial={{ 
+                          opacity: 0,
+                          scale: 0.1,
+                          rotateX: 180
+                        }}
+                        animate={{ 
+                          opacity: 1,
+                          scale: 1,
+                          rotateX: 0
+                        }}
+                        transition={{
+                          duration: 0.5,
+                          ease: [0.34, 1.56, 0.64, 1],
+                          delay: 0.3
+                        }}
+                        style={{ 
+                          display: "inline-block",
+                          transformOrigin: "center"
+                        }}
+                      >
+                        R
+                      </motion.span>
+
+                      {/* Second R with dramatic scale from behind */}
+                      <motion.span
+                        initial={{ 
+                          opacity: 0,
+                          scale: 0.1,
+                          rotateX: 180
+                        }}
+                        animate={{ 
+                          opacity: 1,
+                          scale: 1,
+                          rotateX: 0
+                        }}
+                        transition={{
+                          duration: 0.5,
+                          ease: [0.34, 1.56, 0.64, 1],
+                          delay: 0.45
+                        }}
+                        style={{ 
+                          display: "inline-block",
+                          transformOrigin: "center"
+                        }}
+                      >
+                        R
+                      </motion.span>
+                    </motion.h1>
+
+                    {/* Glow effect behind text */}
+                    <motion.div
+                      className="absolute inset-0 pointer-events-none"
+                      style={{
+                        background: "radial-gradient(circle, rgba(124, 58, 237, 0.3) 0%, transparent 70%)",
+                        filter: "blur(20px)"
+                      }}
+                      animate={{
+                        opacity: [0.5, 0.8, 0.5],
+                        scale: [0.8, 1.1, 0.8]
+                      }}
+                      transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                    />
                   </motion.div>
 
                   {/* Progress Percentage */}
                   <motion.div
-                    variants={mobileVariants.text}
-                    initial="initial"
-                    animate="animate"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.8 }}
                     className="flex items-center justify-center"
                   >
-                    <p
-                      className={`font-medium tracking-wider ${isMobile ? 'text-xs' : 'text-sm'}`}
-                      style={{ color: "#a78bfa" }}
+                    <motion.p
+                      className={`font-medium tracking-wider tabular-nums ${isMobile ? 'text-xs' : 'text-sm'}`}
+                      style={{ 
+                        color: "#a78bfa",
+                        fontFamily: "'SF Mono', 'Monaco', 'Inconsolata', monospace"
+                      }}
                     >
-                      {progress}%
-                    </p>
+                      {progress.toString().padStart(3, '0')}%
+                    </motion.p>
                   </motion.div>
                 </div>
               </div>
             </motion.div>
 
-            {/* Simplified Loading Text for mobile */}
+            {/* Elegant Loading Text */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: isMobile ? 0.5 : 0.8, delay: isMobile ? 0.6 : 1.2 }}
-              className={`text-center ${isMobile ? 'mt-8' : 'mt-20'}`}
+              transition={{ duration: 0.8, delay: 1.2 }}
+              className="mt-20 text-center"
             >
-              <p
-                className={`font-light tracking-[0.3em] uppercase ${isMobile ? 'text-sm' : 'text-lg'}`}
+              <motion.p
+                className="text-lg font-light tracking-[0.3em] uppercase"
                 style={{ color: "#e0e7ff" }}
+                animate={{ opacity: [0.6, 1, 0.6] }}
+                transition={{ duration: 2.5, repeat: Infinity }}
               >
                 Loading Portfolio
-              </p>
+              </motion.p>
 
-              {/* Simplified dots animation */}
-              <div className={`flex justify-center space-x-2 ${isMobile ? 'mt-4' : 'mt-8'}`}>
-                {[0, 1, 2].map((i) => (
+              {/* Elegant dots animation */}
+              <div className="flex justify-center mt-8 space-x-3">
+                {[0, 1, 2, 3, 4].map((i) => (
                   <motion.div
                     key={i}
-                    className={`rounded-full ${isMobile ? 'w-1.5 h-1.5' : 'w-2 h-2'}`}
+                    className="w-2 h-2 rounded-full"
                     style={{
                       background: `linear-gradient(90deg, #a21caf, #7c3aed 90%)`
                     }}
@@ -360,7 +378,7 @@ export const LoadingScreen = ({ onLoadingComplete }: LoadingScreenProps) => {
                       opacity: [0.3, 1, 0.3],
                     }}
                     transition={{
-                      duration: 1.5,
+                      duration: 1.8,
                       delay: i * 0.2,
                       repeat: Infinity,
                       ease: "easeInOut"
@@ -370,6 +388,33 @@ export const LoadingScreen = ({ onLoadingComplete }: LoadingScreenProps) => {
               </div>
             </motion.div>
           </div>
+
+          {/* Elegant corner accents */}
+          {[0, 1, 2, 3].map((corner) => (
+            <motion.div
+              key={corner}
+              className="absolute w-20 h-20"
+              style={{
+                [corner < 2 ? 'top' : 'bottom']: '3rem',
+                [corner % 2 === 0 ? 'left' : 'right']: '3rem',
+              }}
+              animate={{ opacity: [0.2, 0.5, 0.2] }}
+              transition={{
+                duration: 2.5,
+                delay: corner * 0.4,
+                repeat: Infinity,
+              }}
+            >
+              <div
+                className="w-full h-full rounded-tl-lg"
+                style={{
+                  borderLeft: "2px solid #7c3aed55",
+                  borderTop: "2px solid #a21caf44",
+                  transform: `rotate(${corner * 90}deg)`
+                }}
+              />
+            </motion.div>
+          ))}
         </motion.div>
       )}
     </AnimatePresence>

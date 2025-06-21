@@ -1,5 +1,5 @@
 import { Canvas } from '@react-three/fiber';
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { SimpleScene3D } from '../components/3d/SimpleScene3D';
 import { LoadingScreen } from '../components/LoadingScreen';
@@ -9,7 +9,7 @@ import { AboutSection } from '../components/sections/AboutSection';
 import { ProjectsSection } from '../components/sections/ProjectsSection';
 import { ContactSection } from '../components/sections/ContactSection';
 import { ThemeProvider } from '../contexts/ThemeContext';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 
 // SEO-friendly content section with rich text and keyword optimization
 const SeoContent = () => {
@@ -43,6 +43,13 @@ const SeoContent = () => {
 
 const Index = () => {
   const [isMainContentVisible, setIsMainContentVisible] = useState(false);
+  const prefersReducedMotion = useReducedMotion();
+
+  // Detect mobile devices for performance optimization
+  const isMobile = useMemo(() => {
+    if (typeof window === 'undefined') return false;
+    return window.innerWidth < 768 || /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  }, []);
 
   // Add useEffect to ping Google's indexing API when the page loads
   useEffect(() => {
@@ -72,10 +79,82 @@ const Index = () => {
   }, []);
 
   const handleLoadingComplete = () => {
-    // Small delay to ensure smooth transition overlap
+    // Faster transition on mobile
     setTimeout(() => {
       setIsMainContentVisible(true);
-    }, 200);
+    }, isMobile ? 100 : 200);
+  };
+
+  // Mobile-optimized animation variants
+  const mobileVariants = {
+    mainContainer: {
+      initial: { opacity: 0, scale: isMobile ? 1 : 0.95 },
+      animate: { 
+        opacity: 1, 
+        scale: 1,
+        transition: { 
+          duration: isMobile ? 0.8 : 1.2, 
+          ease: [0.16, 1, 0.3, 1],
+          staggerChildren: isMobile ? 0.05 : 0.1
+        }
+      }
+    },
+    navigation: {
+      initial: { opacity: 0, y: isMobile ? -10 : -20 },
+      animate: { 
+        opacity: 1, 
+        y: 0,
+        transition: { duration: isMobile ? 0.5 : 0.8, delay: isMobile ? 0.1 : 0.2 }
+      }
+    },
+    scene3d: {
+      initial: { opacity: 0 },
+      animate: { 
+        opacity: 1,
+        transition: { duration: isMobile ? 1.0 : 1.5, delay: isMobile ? 0.15 : 0.3 }
+      }
+    },
+    heroContent: {
+      initial: { opacity: 0, y: isMobile ? 15 : 30, scale: isMobile ? 1 : 0.95 },
+      animate: { 
+        opacity: 1, 
+        y: 0, 
+        scale: 1,
+        transition: { duration: isMobile ? 0.7 : 1, delay: isMobile ? 0.3 : 0.6 }
+      }
+    },
+    heroTitle: {
+      initial: { opacity: 0, scale: isMobile ? 0.95 : 0.8 },
+      animate: { 
+        opacity: 1, 
+        scale: 1,
+        transition: { duration: isMobile ? 0.8 : 1.2, delay: isMobile ? 0.4 : 0.8 }
+      }
+    },
+    heroSubtitle: {
+      initial: { opacity: 0, y: isMobile ? 10 : 20 },
+      animate: { 
+        opacity: 1, 
+        y: 0,
+        transition: { duration: isMobile ? 0.6 : 0.8, delay: isMobile ? 0.5 : 1.0 }
+      }
+    },
+    heroButtons: {
+      initial: { opacity: 0, y: isMobile ? 10 : 20 },
+      animate: { 
+        opacity: 1, 
+        y: 0,
+        transition: { duration: isMobile ? 0.6 : 0.8, delay: isMobile ? 0.6 : 1.2 }
+      }
+    },
+    section: {
+      initial: { opacity: 0, y: isMobile ? 25 : 50 },
+      animate: { 
+        opacity: 1, 
+        y: 0,
+        transition: { duration: isMobile ? 0.6 : 0.8 }
+      }
+    }
   };
 
   return (
@@ -119,40 +198,45 @@ const Index = () => {
         ) : (
           <motion.div
             key="main-content"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ 
-              duration: 1.2, 
-              ease: [0.16, 1, 0.3, 1],
-              staggerChildren: 0.1
-            }}
+            variants={mobileVariants.mainContainer}
+            initial="initial"
+            animate="animate"
             className="min-h-screen bg-gradient-to-br from-background via-purple-900/20 to-background relative overflow-hidden"
+            style={{
+              // Hardware acceleration for mobile
+              transform: 'translate3d(0,0,0)',
+              backfaceVisibility: 'hidden',
+              perspective: '1000px'
+            }}
           >
             {/* Hidden SEO content that's still readable by search engines */}
             <SeoContent />
             
             {/* Navigation */}
             <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
+              variants={mobileVariants.navigation}
+              style={{ willChange: 'transform' }}
             >
               <Navigation />
             </motion.div>
             
             {/* Hero Section */}
             <section id="home" className="relative min-h-screen">
-              {/* 3D Scene */}
+              {/* 3D Scene - Conditionally rendered with reduced complexity on mobile */}
               <motion.div 
                 className="absolute inset-0 z-10"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 1.5, delay: 0.3 }}
+                variants={mobileVariants.scene3d}
+                style={{ willChange: 'opacity' }}
               >
                 <Canvas
                   camera={{ position: [0, 0, 10], fov: 75 }}
-                  gl={{ antialias: true, alpha: true }}
-                  dpr={[1, 2]}
+                  gl={{ 
+                    antialias: !isMobile, // Disable antialiasing on mobile for performance
+                    alpha: true,
+                    powerPreference: isMobile ? "low-power" : "high-performance"
+                  }}
+                  dpr={isMobile ? [1, 1.5] : [1, 2]} // Lower pixel ratio on mobile
+                  performance={{ min: isMobile ? 0.7 : 0.5 }} // Adjust performance threshold
                 >
                   <Suspense fallback={null}>
                     <SimpleScene3D />
@@ -163,32 +247,25 @@ const Index = () => {
               {/* Hero Content Overlay */}
               <div className="relative z-20 flex items-center justify-center min-h-screen">
                 <motion.div 
-                  initial={{ opacity: 0, y: 30, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  transition={{ duration: 1, delay: 0.6 }}
+                  variants={mobileVariants.heroContent}
                   className="text-center text-foreground px-6"
+                  style={{ willChange: 'transform' }}
                 >
                   <motion.h1 
                     className="text-6xl md:text-8xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent mb-6"
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 1.2, delay: 0.8 }}
+                    variants={mobileVariants.heroTitle}
                   >
                     Rajdeep Roy
                   </motion.h1>
                   <motion.p 
                     className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 1.0 }}
+                    variants={mobileVariants.heroSubtitle}
                   >
                     ML Engineer & Software Developer
                   </motion.p>
                   <motion.div
                     className="flex gap-4 justify-center"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 1.2 }}
+                    variants={mobileVariants.heroButtons}
                   >
                     <a 
                       href="https://www.linkedin.com/in/rajdeep-roy-4086a2274/" 
@@ -221,36 +298,40 @@ const Index = () => {
 
             {/* About Section */}
             <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 1.4 }}
+              variants={mobileVariants.section}
+              animate="animate"
+              transition={{ delay: isMobile ? 0.7 : 1.4 }}
+              style={{ willChange: 'transform' }}
             >
               <AboutSection />
             </motion.div>
 
             {/* Projects Section */}
             <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 1.6 }}
+              variants={mobileVariants.section}
+              animate="animate"
+              transition={{ delay: isMobile ? 0.8 : 1.6 }}
+              style={{ willChange: 'transform' }}
             >
               <ProjectsSection />
             </motion.div>
 
             {/* Contact Section */}
             <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 1.8 }}
+              variants={mobileVariants.section}
+              animate="animate"
+              transition={{ delay: isMobile ? 0.9 : 1.8 }}
+              style={{ willChange: 'transform' }}
             >
               <ContactSection />
             </motion.div>
             
             {/* Chatbot */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
+              initial={{ opacity: 0, scale: isMobile ? 0.95 : 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6, delay: 2.0 }}
+              transition={{ duration: isMobile ? 0.4 : 0.6, delay: isMobile ? 1.0 : 2.0 }}
+              style={{ willChange: 'transform' }}
             >
               <ChatBot />
             </motion.div>

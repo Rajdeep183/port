@@ -2,22 +2,30 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export const LoadingScreen = () => {
-  const [isLoading, setIsLoading] = useState(true);
   const [progress, setProgress] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(timer);
-          setTimeout(() => setIsLoading(false), 800);
-          return 100;
-        }
-        return prev + 1;
-      });
-    }, 30);
+    let raf: number;
+    let start: number | null = null;
+    let current = 0;
+    const duration = 2500; // 2.5 seconds for smoother loading
 
-    return () => clearInterval(timer);
+    function animateLoading(ts: number) {
+      if (!start) start = ts;
+      const elapsed = ts - start;
+      const eased = Math.min(1, elapsed / duration);
+      // Ease out cubic for smoothness
+      current = Math.floor(100 * (1 - Math.pow(1 - eased, 3)));
+      setProgress(current);
+      if (current < 100) {
+        raf = requestAnimationFrame(animateLoading);
+      } else {
+        setTimeout(() => setIsLoading(false), 500);
+      }
+    }
+    raf = requestAnimationFrame(animateLoading);
+    return () => cancelAnimationFrame(raf);
   }, []);
 
   // Generate elegant floating particles
@@ -42,7 +50,8 @@ export const LoadingScreen = () => {
     <AnimatePresence>
       {isLoading && (
         <motion.div
-          initial={{ opacity: 1 }}
+          initial={{ opacity: 1, scale: 1 }}
+          animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.98 }}
           transition={{ duration: 0.8, ease: "easeInOut" }}
           className="fixed inset-0 z-50 bg-gradient-to-br from-slate-900 via-purple-900 to-indigo-900 flex items-center justify-center overflow-hidden"
@@ -115,7 +124,7 @@ export const LoadingScreen = () => {
           ))}
 
           {/* Main Loading Container */}
-          <div className="relative flex flex-col items-center justify-center">
+          <div id="loading-progress" data-progress={progress} className="relative flex flex-col items-center justify-center">
             <motion.div
               initial={{ scale: 0.8, opacity: 0, rotateY: -90 }}
               animate={{ scale: 1, opacity: 1, rotateY: 0 }}

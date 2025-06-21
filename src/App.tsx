@@ -7,6 +7,8 @@ import { HelmetProvider } from "react-helmet-async";
 import React, { useState, useEffect } from "react";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import { LoadingScreen } from "@/components/LoadingScreen";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 
 const queryClient = new QueryClient();
 
@@ -14,30 +16,42 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 2000);
-    return () => clearTimeout(timer);
+    // Wait for LoadingScreen to reach 100% before showing the app
+    const checkLoaded = () => {
+      const interval = setInterval(() => {
+        const loadingScreen = document.getElementById('loading-progress');
+        if (!loadingScreen || loadingScreen.getAttribute('data-progress') === '100') {
+          setIsLoading(false);
+          clearInterval(interval);
+        }
+      }, 50);
+      return () => clearInterval(interval);
+    };
+    checkLoaded();
   }, []);
 
   if (isLoading) {
-    return null; // Render nothing while loading
+    return <LoadingScreen />;
   }
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <HelmetProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
-      </HelmetProvider>
-    </QueryClientProvider>
+    <ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <HelmetProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
+          </TooltipProvider>
+        </HelmetProvider>
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 };
 

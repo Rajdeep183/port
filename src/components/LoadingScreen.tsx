@@ -38,6 +38,15 @@ export const LoadingScreen = () => {
     speed: 0.7 + Math.random() * 0.3,
   }));
 
+  // Premium color palette
+  const colors = {
+    background: "linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 40%, #2a2a2a 100%)",
+    accent: "#f8fafc",
+    secondary: "#64748b",
+    highlight: "#e2e8f0",
+    subtle: "#334155"
+  };
+
   // Use a dark purple shade for backgrounds and accents
   const darkPurple = "#2a003f";
 
@@ -222,40 +231,62 @@ export const LoadingScreen = () => {
 
                 {/* Center Content */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  {/* Animated RR Text */}
+                  {/* Refined Initials */}
                   <motion.div
-                    initial={{ scale: 0, rotate: -180 }}
-                    animate={{ scale: 1, rotate: 0 }}
+                    initial={{ scale: 0, opacity: 0, rotateY: -180 }}
+                    animate={{ scale: 1, opacity: 1, rotateY: 0 }}
                     transition={{
-                      duration: 1,
-                      ease: "easeOut",
-                      type: "spring",
-                      stiffness: 150,
-                      delay: 0.3
+                      duration: 1.8,
+                      ease: [0.16, 1, 0.3, 1],
+                      delay: 0.5
                     }}
-                    className="flex items-center justify-center"
+                    className="flex items-center justify-center mb-4"
                   >
                     <motion.h1
-                      className="text-7xl font-light text-white leading-none tracking-wider"
+                      className="text-6xl font-light tracking-[0.2em] leading-none"
                       style={{
-                        fontFamily: "'Inter', sans-serif",
-                        filter: "drop-shadow(0 0 20px #7c3aed55)",
-                        textShadow: "0 0 15px #2a003f88",
+                        fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+                        color: colors.accent,
+                        textShadow: "0 0 40px rgba(248, 250, 252, 0.1)",
+                        fontWeight: 300,
+                        letterSpacing: "0.15em"
                       }}
                       animate={{
                         textShadow: [
-                          "0 0 15px #2a003f88",
-                          "0 0 25px #7c3aed",
-                          "0 0 15px #2a003f88"
+                          "0 0 40px rgba(248, 250, 252, 0.1)",
+                          "0 0 60px rgba(248, 250, 252, 0.2)",
+                          "0 0 40px rgba(248, 250, 252, 0.1)"
                         ],
+                        scale: [1, 1.02, 1]
                       }}
                       transition={{
-                        duration: 2.5,
+                        duration: 3,
                         repeat: Infinity,
-                        ease: "easeInOut"
+                        ease: [0.16, 1, 0.3, 1]
                       }}
                     >
-                      RR
+                      <motion.span
+                        initial={{ x: -20, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        transition={{
+                          duration: 1.2,
+                          ease: [0.16, 1, 0.3, 1],
+                          delay: 0.8
+                        }}
+                      >
+                        R
+                      </motion.span>
+                      <motion.span
+                        initial={{ x: 20, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        transition={{
+                          duration: 1.2,
+                          ease: [0.16, 1, 0.3, 1],
+                          delay: 1.0
+                        }}
+                      >
+                        R
+                      </motion.span>
                     </motion.h1>
                   </motion.div>
 

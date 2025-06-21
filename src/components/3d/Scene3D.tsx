@@ -1,22 +1,23 @@
-
 import { useRef, useState, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { OrbitControls, Stars, Center, Float } from '@react-three/drei';
-import { Group, DoubleSide } from 'three';
+import { OrbitControls, Stars, Float } from '@react-three/drei';
+import { Group, MathUtils } from 'three';
 import { FloatingCubes } from './FloatingCubes';
 import { ParticleField } from './ParticleField';
 
 export const Scene3D = () => {
   const groupRef = useRef<Group>(null);
+  const centralSphereRef = useRef<any>(null);
+  const ringRefs = useRef<any[]>([]);
   const [cursor, setCursor] = useState({ x: 0, y: 0 });
-  const [deviceOrientation, setDeviceOrientation] = useState({ alpha: 0, beta: 0, gamma: 0 });
+  const [isHovered, setIsHovered] = useState(false);
 
-  // Track cursor position for responsive movement
+  // Mouse tracking
   useEffect(() => {
     const handleMouseMove = (event: MouseEvent) => {
       setCursor({
-        x: (event.clientX / window.innerWidth) * 2 - 1, // Normalize to [-1, 1]
-        y: -(event.clientY / window.innerHeight) * 2 + 1, // Normalize to [-1, 1]
+        x: (event.clientX / window.innerWidth) * 2 - 1,
+        y: -(event.clientY / window.innerHeight) * 2 + 1,
       });
     };
 
@@ -24,142 +25,140 @@ export const Scene3D = () => {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  // Add gyroscopic effect for mobile devices
-  useEffect(() => {
-    const handleDeviceOrientation = (event: DeviceOrientationEvent) => {
-      const { alpha, beta, gamma } = event;
-      if (alpha !== null && beta !== null && gamma !== null) {
-        setDeviceOrientation({ alpha, beta, gamma });
-      }
-    };
-
-    const requestPermissionIfNeeded = async () => {
-      // Type-safe check for iOS 13+ permission request
-      if (typeof (DeviceOrientationEvent as any).requestPermission === 'function') {
-        try {
-          const permission = await (DeviceOrientationEvent as any).requestPermission();
-          if (permission === 'granted') {
-            window.addEventListener('deviceorientation', handleDeviceOrientation);
-          }
-        } catch (error) {
-          console.log('DeviceOrientationEvent permission denied');
-        }
-      } else {
-        // For non-iOS devices or older iOS versions
-        window.addEventListener('deviceorientation', handleDeviceOrientation);
-      }
-    };
-
-    requestPermissionIfNeeded();
-
-    return () => {
-      window.removeEventListener('deviceorientation', handleDeviceOrientation);
-    };
-  }, []);
-
-  // Animate group based on cursor position and device orientation
+  // Animation system
   useFrame((state) => {
+    const time = state.clock.elapsedTime;
+    
+    // Main group movement - More responsive to cursor
     if (groupRef.current) {
-      // Cursor-based rotation with smooth interpolation
-      const targetRotationY = cursor.x * 0.3;
-      const targetRotationX = cursor.y * 0.2;
+      const targetRotationY = cursor.x * 0.3; // Increased sensitivity
+      const targetRotationX = cursor.y * 0.2; // Increased sensitivity
       
-      // Add gyroscopic effect from device orientation
-      const gyroX = (deviceOrientation.beta || 0) * 0.01;
-      const gyroZ = (deviceOrientation.gamma || 0) * 0.01;
+      groupRef.current.rotation.y = MathUtils.lerp(groupRef.current.rotation.y, targetRotationY, 0.08);
+      groupRef.current.rotation.x = MathUtils.lerp(groupRef.current.rotation.x, targetRotationX, 0.08);
       
-      // Combine cursor and gyroscopic effects
-      groupRef.current.rotation.y += (targetRotationY - groupRef.current.rotation.y) * 0.05;
-      groupRef.current.rotation.x += (targetRotationX - groupRef.current.rotation.x) * 0.05;
-      
-      // Apply gyroscopic tilt
-      groupRef.current.rotation.x += gyroX * 0.05;
-      groupRef.current.rotation.z += gyroZ * 0.05;
-      
-      // Add subtle floating animation
-      groupRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.5) * 0.1;
+      // Add subtle position movement based on cursor
+      groupRef.current.position.x = MathUtils.lerp(groupRef.current.position.x, cursor.x * 0.2, 0.05);
+      groupRef.current.position.y = MathUtils.lerp(groupRef.current.position.y, cursor.y * 0.1, 0.05);
     }
+
+    // Central sphere animation - More responsive
+    if (centralSphereRef.current) {
+      centralSphereRef.current.rotation.x = time * 0.3 + cursor.y * 0.5;
+      centralSphereRef.current.rotation.y = time * 0.2 + cursor.x * 0.5;
+      
+      // Pulsing effect with cursor influence
+      const pulse = 1 + Math.sin(time * 2) * 0.05 + Math.abs(cursor.x + cursor.y) * 0.02;
+      centralSphereRef.current.scale.setScalar(pulse);
+    }
+
+    // Animate rings - More responsive to cursor
+    ringRefs.current.forEach((ring, index) => {
+      if (ring) {
+        const ringTime = time + index * Math.PI * 0.5;
+        const cursorInfluence = (cursor.x + cursor.y) * 0.2;
+        
+        ring.rotation.x = ringTime * (0.3 + index * 0.1) + cursorInfluence;
+        ring.rotation.y = ringTime * (0.2 + index * 0.05) + cursor.x * 0.3;
+        ring.rotation.z = ringTime * (0.1 + index * 0.02) + cursor.y * 0.2;
+        
+        // Dynamic ring positioning based on cursor
+        const ringOffset = Math.sin(time + index) * 0.1 + Math.abs(cursor.x) * 0.05;
+        ring.position.y = Math.sin(ringTime * 0.5) * ringOffset;
+      }
+    });
   });
 
   return (
     <>
-      {/* Enhanced Lighting */}
-      <ambientLight intensity={0.5} />
-      <pointLight position={[10, 10, 10]} intensity={1.5} />
-      <pointLight position={[-10, -10, -10]} intensity={1} color="#4338ca" />
-      <pointLight position={[0, 15, 5]} intensity={0.8} color="#06b6d4" />
+      {/* Lighting */}
+      <ambientLight intensity={0.3} />
+      <directionalLight position={[10, 10, 5]} intensity={1} color="#ffffff" />
+      <pointLight position={[-5, -5, -5]} intensity={0.5} color="#7c3aed" />
+      <pointLight position={[5, 5, 5]} intensity={0.4} color="#06b6d4" />
       
-      {/* Background Elements with Spherical Stars */}
+      {/* Background */}
       <Stars 
-        radius={500} 
-        depth={100} 
-        count={2000} 
-        factor={15} 
+        radius={300} 
+        depth={50} 
+        count={1200} 
+        factor={6} 
         fade 
-        speed={2}
-        saturation={0}
-        className="stars"
+        speed={0.5}
       />
       <ParticleField />
       
-      {/* Main Saturn-like Planet */}
-      <group ref={groupRef}>
-        <Float speed={2} rotationIntensity={0.2} floatIntensity={0.5}>
-          <Center>
-            <mesh position={[0, 0, 0]}>
-              <sphereGeometry args={[1.5, 64, 64]} />
+      {/* Main Scene */}
+      <group 
+        ref={groupRef}
+        onPointerEnter={() => setIsHovered(true)}
+        onPointerLeave={() => setIsHovered(false)}
+      >
+        {/* Central Sphere */}
+        <Float speed={1.5} rotationIntensity={0.2} floatIntensity={0.3}>
+          <mesh ref={centralSphereRef} position={[0, 0, 0]}>
+            <sphereGeometry args={[1.2, 64, 64]} />
+            <meshStandardMaterial
+              color="#1a1a2e"
+              emissive="#7c3aed"
+              emissiveIntensity={isHovered ? 0.3 : 0.15}
+              roughness={0.2}
+              metalness={0.8}
+              transparent
+              opacity={0.9}
+            />
+          </mesh>
+        </Float>
+
+        {/* Wireframe Structure */}
+        <Float speed={1.8} rotationIntensity={0.3} floatIntensity={0.2}>
+          <mesh position={[0, 0, 0]} scale={isHovered ? 1.05 : 1}>
+            <icosahedronGeometry args={[2.5, 1]} />
+            <meshBasicMaterial 
+              color="#06b6d4" 
+              wireframe 
+              transparent 
+              opacity={isHovered ? 0.5 : 0.3}
+            />
+          </mesh>
+        </Float>
+
+        {/* Ring System */}
+        {Array.from({ length: 3 }, (_, i) => (
+          <Float key={i} speed={1.2 + i * 0.2} rotationIntensity={0.4} floatIntensity={0.2}>
+            <mesh 
+              ref={(el) => (ringRefs.current[i] = el)}
+              position={[0, 0, 0]} 
+              rotation={[(Math.PI / 4) * i, (Math.PI / 3) * i, 0]}
+            >
+              <torusGeometry args={[3 + i * 0.4, 0.06, 12, 64]} />
               <meshStandardMaterial 
-                color="#d1a054"
-                roughness={0.4}
-                metalness={0.6}
-                emissive="#d1a054"
-                emissiveIntensity={0.1}
+                color={i === 0 ? "#c026d3" : i === 1 ? "#7c3aed" : "#06b6d4"}
+                emissive={i === 0 ? "#c026d3" : i === 1 ? "#7c3aed" : "#06b6d4"}
+                emissiveIntensity={isHovered ? 0.3 : 0.1}
+                metalness={0.8}
+                roughness={0.2}
+                transparent
+                opacity={0.7}
               />
             </mesh>
-          </Center>
-        </Float>
-
-        {/* Saturn Rings */}
-        <Float speed={1.5} rotationIntensity={0.3} floatIntensity={0.4}>
-          <mesh position={[0, 0, 0]} rotation={[Math.PI / 2, 0, 0]}>
-            <ringGeometry args={[2, 2.5, 64]} />
-            <meshStandardMaterial 
-              color="#f4a261" 
-              roughness={0.5}
-              metalness={0.7}
-              emissive="#f4a261"
-              emissiveIntensity={0.05}
-              side={DoubleSide}
-            />
-          </mesh>
-        </Float>
-
-        <Float speed={1.2} rotationIntensity={0.4} floatIntensity={0.3}>
-          <mesh position={[0, 0, 0]} rotation={[Math.PI / 2, 0, 0]}>
-            <ringGeometry args={[2.6, 3.2, 64]} />
-            <meshStandardMaterial 
-              color="#e76f51" 
-              roughness={0.6}
-              metalness={0.8}
-              emissive="#e76f51"
-              emissiveIntensity={0.04}
-              side={DoubleSide}
-            />
-          </mesh>
-        </Float>
+          </Float>
+        ))}
       </group>
       
-      {/* Floating Elements */}
+      {/* Floating Cubes */}
       <FloatingCubes />
       
       {/* Controls */}
       <OrbitControls 
         enablePan={false}
         enableZoom={false}
-        maxPolarAngle={Math.PI / 2}
-        minPolarAngle={Math.PI / 2}
+        maxPolarAngle={Math.PI / 1.8}
+        minPolarAngle={Math.PI / 2.2}
         autoRotate
-        autoRotateSpeed={0.5}
+        autoRotateSpeed={isHovered ? 0.8 : 0.4}
+        enableDamping
+        dampingFactor={0.05}
       />
     </>
   );

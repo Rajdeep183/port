@@ -4,7 +4,7 @@ import { LoadingScreen } from '../components/LoadingScreen';
 import { ThemeProvider } from '../contexts/ThemeContext';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { Canvas } from '@react-three/fiber';
-import { SimpleScene3D } from '../components/3D/SimpleScene3D';
+import { SimpleScene3D } from '../components/3d/SimpleScene3D';
 import { Navigation } from '../components/Navigation';
 import { AboutSection } from '../components/sections/AboutSection';
 import { ProjectsSection } from '../components/sections/ProjectsSection';

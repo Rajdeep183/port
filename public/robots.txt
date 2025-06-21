@@ -1,0 +1,24 @@
+# Allow all crawlers complete access
+User-agent: *
+Allow: /
+Disallow: /api/
+
+# Specific instructions for Google
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+# Specific instructions for Bing
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+# Specific instructions for social media crawlers
+User-agent: Twitterbot
+Allow: /
+
+User-agent: facebookexternalhit
+Allow: /
+
+# Sitemap location
+Sitemap: https://rajdeeproy21.com/sitemap.xml

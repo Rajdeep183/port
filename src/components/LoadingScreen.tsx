@@ -1,7 +1,11 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-export const LoadingScreen = () => {
+interface LoadingScreenProps {
+  onLoadingComplete?: () => void;
+}
+
+export const LoadingScreen = ({ onLoadingComplete }: LoadingScreenProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [progress, setProgress] = useState(0);
 
@@ -10,7 +14,10 @@ export const LoadingScreen = () => {
       setProgress((prev) => {
         if (prev >= 100) {
           clearInterval(timer);
-          setTimeout(() => setIsLoading(false), 800);
+          setTimeout(() => {
+            setIsLoading(false);
+            onLoadingComplete?.();
+          }, 1200); // Extended delay for smoother transition
           return 100;
         }
         return prev + 1;
@@ -18,7 +25,7 @@ export const LoadingScreen = () => {
     }, 30);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [onLoadingComplete]);
 
   // Generate elegant floating particles
   const backgroundParticles = Array.from({ length: 20 }, (_, i) => ({

@@ -1,5 +1,5 @@
 import { Canvas } from '@react-three/fiber';
-import { Suspense, useEffect } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { SimpleScene3D } from '../components/3d/SimpleScene3D';
 import { LoadingScreen } from '../components/LoadingScreen';
@@ -9,7 +9,7 @@ import { AboutSection } from '../components/sections/AboutSection';
 import { ProjectsSection } from '../components/sections/ProjectsSection';
 import { ContactSection } from '../components/sections/ContactSection';
 import { ThemeProvider } from '../contexts/ThemeContext';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 // SEO-friendly content section with rich text and keyword optimization
 const SeoContent = () => {
@@ -42,6 +42,8 @@ const SeoContent = () => {
 };
 
 const Index = () => {
+  const [isMainContentVisible, setIsMainContentVisible] = useState(false);
+
   // Add useEffect to ping Google's indexing API when the page loads
   useEffect(() => {
     // This is a way to inform Google about your site changes
@@ -68,6 +70,13 @@ const Index = () => {
       });
     }
   }, []);
+
+  const handleLoadingComplete = () => {
+    // Small delay to ensure smooth transition overlap
+    setTimeout(() => {
+      setIsMainContentVisible(true);
+    }, 200);
+  };
 
   return (
     <ThemeProvider>
@@ -103,75 +112,101 @@ const Index = () => {
           }
         `}</script>
       </Helmet>
-      <div className="min-h-screen bg-gradient-to-br from-background via-purple-900/20 to-background relative overflow-hidden">
-        {/* Hidden SEO content that's still readable by search engines */}
-        <SeoContent />
-        
-        {/* Navigation */}
-        <Navigation />
-        
-        {/* Hero Section */}
-        <section id="home" className="relative min-h-screen">
-          {/* 3D Scene */}
-          <div className="absolute inset-0 z-10">
-            <Canvas
-              camera={{ position: [0, 0, 10], fov: 75 }}
-              gl={{ antialias: true, alpha: true }}
-              dpr={[1, 2]}
-            >
-              <Suspense fallback={null}>
-                <SimpleScene3D />
-              </Suspense>
-            </Canvas>
-          </div>
-
-          {/* Hero Content Overlay */}
-          <div className="relative z-20 flex items-center justify-center min-h-screen">
-            <motion.div 
-              initial={{ opacity: 0, y: 50 }}
+      
+      <AnimatePresence mode="wait">
+        {!isMainContentVisible ? (
+          <LoadingScreen key="loading" onLoadingComplete={handleLoadingComplete} />
+        ) : (
+          <motion.div
+            key="main-content"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ 
+              duration: 1.2, 
+              ease: [0.16, 1, 0.3, 1],
+              staggerChildren: 0.1
+            }}
+            className="min-h-screen bg-gradient-to-br from-background via-purple-900/20 to-background relative overflow-hidden"
+          >
+            {/* Hidden SEO content that's still readable by search engines */}
+            <SeoContent />
+            
+            {/* Navigation */}
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 0.5 }}
-              className="text-center text-foreground px-6"
+              transition={{ duration: 0.8, delay: 0.2 }}
             >
-              <motion.h1 
-                className="text-6xl md:text-8xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent mb-6"
-                initial={{ scale: 0.8 }}
-                animate={{ scale: 1 }}
-                transition={{ duration: 0.8, delay: 0.7 }}
-              >
-                Rajdeep Roy
-              </motion.h1>
-              <motion.p 
-                className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto"
+              <Navigation />
+            </motion.div>
+            
+            {/* Hero Section */}
+            <section id="home" className="relative min-h-screen">
+              {/* 3D Scene */}
+              <motion.div 
+                className="absolute inset-0 z-10"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ duration: 0.8, delay: 1 }}
+                transition={{ duration: 1.5, delay: 0.3 }}
               >
-                ML Engineer & Software Developer
-              </motion.p>
-              <motion.div
-                className="flex gap-4 justify-center"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 1.2 }}
-              >
-                <a 
-                  href="https://www.linkedin.com/in/rajdeep-roy-4086a2274/" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors"
+                <Canvas
+                  camera={{ position: [0, 0, 10], fov: 75 }}
+                  gl={{ antialias: true, alpha: true }}
+                  dpr={[1, 2]}
                 >
-                  LinkedIn
-                </a>
-                <a 
-                  href="https://github.com/Rajdeep183" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="px-6 py-3 bg-secondary hover:bg-secondary/80 text-secondary-foreground rounded-lg font-semibold transition-colors"
+                  <Suspense fallback={null}>
+                    <SimpleScene3D />
+                  </Suspense>
+                </Canvas>
+              </motion.div>
+
+              {/* Hero Content Overlay */}
+              <div className="relative z-20 flex items-center justify-center min-h-screen">
+                <motion.div 
+                  initial={{ opacity: 0, y: 30, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ duration: 1, delay: 0.6 }}
+                  className="text-center text-foreground px-6"
                 >
-                  GitHub
-                </a>
-                <a 
+                  <motion.h1 
+                    className="text-6xl md:text-8xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent mb-6"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 1.2, delay: 0.8 }}
+                  >
+                    Rajdeep Roy
+                  </motion.h1>
+                  <motion.p 
+                    className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 1.0 }}
+                  >
+                    ML Engineer & Software Developer
+                  </motion.p>
+                  <motion.div
+                    className="flex gap-4 justify-center"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 1.2 }}
+                  >
+                    <a 
+                      href="https://www.linkedin.com/in/rajdeep-roy-4086a2274/" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors"
+                    >
+                      LinkedIn
+                    </a>
+                    <a 
+                      href="https://github.com/Rajdeep183" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="px-6 py-3 bg-secondary hover:bg-secondary/80 text-secondary-foreground rounded-lg font-semibold transition-colors"
+                    >
+                      GitHub
+                    </a>
+                    <a 
   href="https://docs.google.com/document/d/1XUs4nQxRFyKGnd96vhWwu5U9xHkN3WhGlM8BjMkGsMQ/edit?usp=sharing" 
   target="_blank" 
   rel="noopener noreferrer"
@@ -179,26 +214,49 @@ const Index = () => {
 >
   Resume
 </a>
-              </motion.div>
+                  </motion.div>
+                </motion.div>
+              </div>
+            </section>
+
+            {/* About Section */}
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 1.4 }}
+            >
+              <AboutSection />
             </motion.div>
-          </div>
-        </section>
 
-        {/* About Section */}
-        <AboutSection />
+            {/* Projects Section */}
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 1.6 }}
+            >
+              <ProjectsSection />
+            </motion.div>
 
-        {/* Projects Section */}
-        <ProjectsSection />
-
-        {/* Contact Section */}
-        <ContactSection />
-
-        {/* Loading Screen */}
-        <LoadingScreen />
-        
-        {/* Chatbot */}
-        <ChatBot />
-      </div>
+            {/* Contact Section */}
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 1.8 }}
+            >
+              <ContactSection />
+            </motion.div>
+            
+            {/* Chatbot */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, delay: 2.0 }}
+            >
+              <ChatBot />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </ThemeProvider>
   );
 };
